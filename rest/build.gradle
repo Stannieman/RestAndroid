@@ -18,7 +18,7 @@ android {
 }
 
 dependencies {
-    compile 'be.stannieman:commonservices:1.0.0.3'
+    compile 'be.stannieman:commonservices:1.0.0.4'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
 }
@@ -34,6 +34,11 @@ task createJavaDocJar(type: Jar, dependsOn: createJavaDoc) {
     from createJavaDoc.destinationDir
 }
 
+task createSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
 publishing {
     publications {
         aar(MavenPublication) {
@@ -42,6 +47,7 @@ publishing {
             version '1.0.0.1'
             artifact "$buildDir\\outputs\\aar\\signed-${project.getName()}-release.aar"
             artifact createJavaDocJar
+            artifact createSourcesJar
 
             //generate pom nodes for dependencies
             pom.withXml {
