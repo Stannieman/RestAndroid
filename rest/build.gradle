@@ -9,7 +9,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0.0.0"
+        versionName "1.0.0.1"
     }
 
     lintOptions {
@@ -39,7 +39,7 @@ publishing {
         aar(MavenPublication) {
             groupId 'be.stannieman'
             artifactId 'rest'
-            version '1.0.0.0'
+            version '1.0.0.1'
             artifact "$buildDir\\outputs\\aar\\signed-${project.getName()}-release.aar"
             artifact createJavaDocJar
 

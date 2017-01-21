@@ -4,7 +4,6 @@ import stannieman.commonservices.models.ServiceResult;
 import stannieman.rest.models.ErrorResponseDataBase;
 import stannieman.rest.models.RequestProperties;
 import stannieman.rest.models.RestResult;
-import stannieman.rest.models.SuccessResponseDataBase;
 
 /**
  * Interface defining a REST client.
@@ -17,7 +16,7 @@ public interface IRestClient {
      * @param <ErrorResponseDataType> response data type for an unsuccessful call
      * @return ServiceResult instance containing a RestResult instance which in turn contains the resulting info and data of the performed REST call
      */
-    <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties);
+    <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties);
 
     /**
      * Does a synchronous post request.
@@ -26,7 +25,7 @@ public interface IRestClient {
      * @param <ErrorResponseDataType> response data type for an unsuccessful call
      * @return ServiceResult instance containing a RestResult instance which in turn contains the resulting info and data of the performed REST call
      */
-    <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties);
+    <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties);
 
     /**
      * Does a synchronous put request.
@@ -35,7 +34,7 @@ public interface IRestClient {
      * @param <ErrorResponseDataType> response data type for an unsuccessful call
      * @return ServiceResult instance containing a RestResult instance which in turn contains the resulting info and data of the performed REST call
      */
-    <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties);
+    <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties);
 
     /**
      * Does a synchronous patch request.
@@ -44,7 +43,7 @@ public interface IRestClient {
      * @param <ErrorResponseDataType> response data type for an unsuccessful call
      * @return ServiceResult instance containing a RestResult instance which in turn contains the resulting info and data of the performed REST call
      */
-    <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties);
+    <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties);
 
     /**
      * Does an asynchronous get request.
@@ -54,7 +53,7 @@ public interface IRestClient {
      * @param <ErrorResponseDataType> response data type for an unsuccessful call
      * @return ServiceResult instance containing a RestResult instance which in turn contains the resulting info and data of the performed REST call
      */
-    <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void getAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener);
+    <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void getAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener);
 
     /**
      * Does an asynchronous post request.
@@ -64,7 +63,7 @@ public interface IRestClient {
      * @param <ErrorResponseDataType> response data type for an unsuccessful call
      * @return ServiceResult instance containing a RestResult instance which in turn contains the resulting info and data of the performed REST call
      */
-    <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void postAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener);
+    <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void postAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener);
 
     /**
      * Does an asynchronous put request.
@@ -74,7 +73,7 @@ public interface IRestClient {
      * @param <ErrorResponseDataType> response data type for an unsuccessful call
      * @return ServiceResult instance containing a RestResult instance which in turn contains the resulting info and data of the performed REST call
      */
-    <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void putAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener);
+    <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void putAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener);
 
     /**
      * Does an asynchronous patch request.
@@ -84,5 +83,5 @@ public interface IRestClient {
      * @param <ErrorResponseDataType> response data type for an unsuccessful call
      * @return ServiceResult instance containing a RestResult instance which in turn contains the resulting info and data of the performed REST call
      */
-    <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void patchAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener);
+    <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void patchAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener);
 }

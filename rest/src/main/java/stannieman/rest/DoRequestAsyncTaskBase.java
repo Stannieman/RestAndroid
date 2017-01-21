@@ -6,9 +6,8 @@ import stannieman.commonservices.models.ServiceResult;
 import stannieman.rest.models.ErrorResponseDataBase;
 import stannieman.rest.models.RequestProperties;
 import stannieman.rest.models.RestResult;
-import stannieman.rest.models.SuccessResponseDataBase;
 
-abstract class DoRequestAsyncTaskBase<SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> extends AsyncTask<Void, Void, ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>>> {
+abstract class DoRequestAsyncTaskBase<SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> extends AsyncTask<Void, Void, ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>>> {
     final int method;
     private final IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener;
     final RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties;

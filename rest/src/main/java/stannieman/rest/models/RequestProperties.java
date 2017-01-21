@@ -10,11 +10,11 @@ import java.util.Map;
  * @param <SuccessResponseDataType> response data type for a successful call
  * @param <ErrorResponseDataType> response data type for an unsuccessful call
  */
-public final class RequestProperties<SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> {
+public final class RequestProperties<SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> {
     private Class<SuccessResponseDataType> successResponseDataType;
     private Class<ErrorResponseDataType> errorResponseDataType;
     private String subPath;
-    private List<String> subPathParameters;
+    private String[] subPathParameters;
     private List<AbstractMap.SimpleEntry<String, String>> queryParameters;
     private Map<String, String> headers;
     private Integer[] successStatusCodes;
@@ -73,7 +73,7 @@ public final class RequestProperties<SuccessResponseDataType extends SuccessResp
      * Gets the parameters for the sub path.
      * @return sub path parameters
      */
-    public List<String> getSubPathParameters() {
+    public String[] getSubPathParameters() {
         return subPathParameters;
     }
 
@@ -82,7 +82,7 @@ public final class RequestProperties<SuccessResponseDataType extends SuccessResp
      * These parameters are inserted into the sub path if it is in printf-style format.
      * @param subPathParameters
      */
-    public void setSubPathParameters(List<String> subPathParameters) {
+    public void setSubPathParameters(String[] subPathParameters) {
         this.subPathParameters = subPathParameters;
     }
 
@@ -129,6 +129,8 @@ public final class RequestProperties<SuccessResponseDataType extends SuccessResp
     /**
      * Sets the status codes for a successful request.
      * If the status code of a request exists in this array the request is treated as successful.
+     * If this property is not set or is null then the full 200 range will be considered successful,
+     * all other codes will be considered a failure.
      * @param successStatusCodes status codes for a successful request
      */
     public void setSuccessStatusCodes(Integer[] successStatusCodes) {

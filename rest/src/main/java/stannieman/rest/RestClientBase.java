@@ -25,7 +25,6 @@ import stannieman.rest.helpers.QueryParamsHelper;
 import stannieman.rest.models.ErrorResponseDataBase;
 import stannieman.rest.models.RequestProperties;
 import stannieman.rest.models.RestResult;
-import stannieman.rest.models.SuccessResponseDataBase;
 
 abstract class RestClientBase implements IRestClient {
     public static final int REQUEST_TIMED_OUT = 1;
@@ -40,6 +39,8 @@ abstract class RestClientBase implements IRestClient {
     public static final int CANNOT_CREATE_URI = 10;
 
     private static final String ENCODING = "UTF-8";
+    private static final int DEFAULT_SUCCESS_STATUS_CODES_MIN = 200;
+    private static final int DEFAULT_SUCCESS_STATUS_CODES_MAX = 299;
 
     private static final Map<String, String> REQUEST_DEFAULT_HEADERS;
     static {
@@ -68,7 +69,7 @@ abstract class RestClientBase implements IRestClient {
         this.timeout = timeout;
     }
 
-    protected <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequest(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, List<AbstractMap.SimpleEntry<String, String>> queryParameters, Map<String, String> headers) {
+    protected <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequest(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, List<AbstractMap.SimpleEntry<String, String>> queryParameters, Map<String, String> headers) {
         ServiceResult<String> uriResult = getUriString(requestProperties.getSubPath(), requestProperties.getSubPathParameters(), queryParameters);
         if (!uriResult.isSuccess()) {
             return new ServiceResult<>(false, uriResult.getResultCode());
@@ -90,7 +91,7 @@ abstract class RestClientBase implements IRestClient {
         return createRestResultFromNetworkResponse(requestProperties.getSuccessResponseDataType(), requestProperties.getErrorResponseDataType(), networkResponse, requestProperties.getSuccessStatusCodes());
     }
 
-    private ServiceResult<String> getUriString(String subPath, List<String> subPathParameters, List<AbstractMap.SimpleEntry<String, String>> queryParameters) {
+    private ServiceResult<String> getUriString(String subPath, String[] subPathParameters, List<AbstractMap.SimpleEntry<String, String>> queryParameters) {
         String parametrizedSubPath = getParametrizedSubPath(subPath, subPathParameters);
 
         try {
@@ -117,8 +118,6 @@ abstract class RestClientBase implements IRestClient {
         RequestFuture<NetworkResponse> future = RequestFuture.newFuture();
         requestQueue.add(new NetworkResponseRequest(method, uriString, getHeadersWithRequestDefaultHeaders(headers), bodyString, future, future, ENCODING));
 
-        if(android.os.Debug.isDebuggerConnected())
-            android.os.Debug.waitForDebugger();
         NetworkResponse response;
         try {
             response = future.get(timeout, TimeUnit.MILLISECONDS);
@@ -142,10 +141,10 @@ abstract class RestClientBase implements IRestClient {
         return new ServiceResult<>(response);
     }
 
-    private <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> createRestResultFromNetworkResponse(Class<SuccessResponseDataType> successResponseDataType, Class<ErrorResponseDataType> errorResponseDataType, NetworkResponse networkResponse, Integer[] successStatusCodes) {
+    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> createRestResultFromNetworkResponse(Class<SuccessResponseDataType> successResponseDataType, Class<ErrorResponseDataType> errorResponseDataType, NetworkResponse networkResponse, Integer[] successStatusCodes) {
         String jsonString = NetworkResponseRequest.parseToString(networkResponse);
 
-        if (successStatusCodes != null && ArrayHelper.Contains(successStatusCodes, networkResponse.statusCode)) {
+        if (isStatusCodeOk(networkResponse.statusCode, successStatusCodes)) {
             if (successResponseDataType == null) {
                 return new ServiceResult<>(new RestResult<SuccessResponseDataType, ErrorResponseDataType>(networkResponse.statusCode));
             }
@@ -178,6 +177,14 @@ abstract class RestClientBase implements IRestClient {
                 return new ServiceResult<>(false, CANNOT_CREATE_OBJECT_FROM_ERROR_RESPONSE);
             }
         }
+    }
+
+    private boolean isStatusCodeOk(int statusCode, Integer[] successStatusCodes) {
+        if (successStatusCodes == null) {
+            return statusCode >= DEFAULT_SUCCESS_STATUS_CODES_MIN && statusCode <= DEFAULT_SUCCESS_STATUS_CODES_MAX;
+        }
+
+        return ArrayHelper.Contains(successStatusCodes, statusCode);
     }
     
     private String stripSlashes(String string) {
@@ -215,12 +222,12 @@ abstract class RestClientBase implements IRestClient {
         return appendPathIfNeeded(appendPathIfNeeded("", apiBasePath), endpointPath);
     }
 
-    private String getParametrizedSubPath(String subPath, List<String> subPathParameters) {
+    private String getParametrizedSubPath(String subPath, String[] subPathParameters) {
         if (subPath == null) {
             return "";
         }
         String parametrizedSubPath = stripSlashes(subPath);
-        if (parametrizedSubPath == "") {
+        if (parametrizedSubPath.equals("")) {
             return "";
         }
         parametrizedSubPath = "/" + parametrizedSubPath;
@@ -229,15 +236,13 @@ abstract class RestClientBase implements IRestClient {
             return parametrizedSubPath;
         }
 
-        return String.format(parametrizedSubPath, subPathParameters.toArray());
+        return String.format(parametrizedSubPath, (Object[])subPathParameters);
     }
 
     private String appendPathIfNeeded(String destination, String path) {
         if (path != null) {
             String strippedPath = stripSlashes(path);
-            if (strippedPath != null) {
-                destination += "/" + strippedPath;
-            }
+            destination += "/" + strippedPath;
         }
 
         return destination;
