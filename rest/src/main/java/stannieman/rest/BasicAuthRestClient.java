@@ -23,9 +23,9 @@ public final class BasicAuthRestClient extends RestClientBase {
     private static final String BasicAuthHeaderValuePrefix = "Basic ";
     private final Map<String, String> authHeader;
 
-    BasicAuthRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, String userName, String password) {
+    BasicAuthRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, String username, String password) {
         super(objectMapper, requestQueue, schema, host, port, apiBasePath, endpointPath, timeout);
-        authHeader = getBasicAuthHeader(userName, password);
+        authHeader = getBasicAuthHeader(username, password);
     }
 
     @Override
@@ -87,9 +87,9 @@ public final class BasicAuthRestClient extends RestClientBase {
         }
     }
 
-    private Map<String, String> getBasicAuthHeader(String userName, String password) {
+    private Map<String, String> getBasicAuthHeader(String username, String password) {
         Map<String, String> basicAuthHeader = new HashMap<>();
-        basicAuthHeader.put(AuthHeaderKey, BasicAuthHeaderValuePrefix + Base64.encodeToString(String.format("%s:%s", userName, password).getBytes(), Base64.NO_WRAP));
+        basicAuthHeader.put(AuthHeaderKey, BasicAuthHeaderValuePrefix + Base64.encodeToString(String.format("%s:%s", username, password).getBytes(), Base64.NO_WRAP));
         return basicAuthHeader;
     }
 
