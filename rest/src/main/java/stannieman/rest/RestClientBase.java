@@ -14,11 +14,15 @@ import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import stannieman.commonservices.helpers.ResultCodeHelper;
+import stannieman.commonservices.models.GeneralResultCodes;
+import stannieman.commonservices.models.IHasDataAndSuccessState;
 import stannieman.commonservices.models.ServiceResult;
 import stannieman.rest.helpers.ArrayHelper;
 import stannieman.rest.helpers.QueryParamsHelper;
@@ -26,18 +30,9 @@ import stannieman.rest.models.ErrorResponseDataBase;
 import stannieman.rest.models.RequestProperties;
 import stannieman.rest.models.RestResult;
 
-abstract class RestClientBase implements IRestClient {
-    public static final int REQUEST_TIMED_OUT = 1;
-    public static final int REQUEST_FAILED = 2;
-    public static final int REQUEST_INTERRUPTED = 3;
-    public static final int RESPONSE_IS_NOT_VALID_JSON = 4;
-    public static final int JSON_RESPONSE_DATA_TYPE_MISMATCH = 5;
-    public static final int JSON_ERROR_DATA_TYPE_MISMATCH = 6;
-    public static final int CANNOT_CREATE_OBJECT_FROM_SUCCESS_RESPONSE = 7;
-    public static final int CANNOT_CREATE_OBJECT_FROM_ERROR_RESPONSE = 8;
-    public static final int CANNOT_CREATE_JSON_STRING_FROM_OBJECT = 9;
-    public static final int CANNOT_CREATE_URI = 10;
+import static stannieman.rest.RestClientResultCodes.CANNOT_CREATE_URI;
 
+abstract class RestClientBase implements IRestClient {
     private static final String ENCODING = "UTF-8";
     private static final int DEFAULT_SUCCESS_STATUS_CODES_MIN = 200;
     private static final int DEFAULT_SUCCESS_STATUS_CODES_MAX = 299;
@@ -62,59 +57,68 @@ abstract class RestClientBase implements IRestClient {
         this.objectMapper = objectMapper;
         this.requestQueue = requestQueue;
 
-        this.scheme = scheme.name().toLowerCase();
+        this.scheme = scheme.name().toLowerCase(Locale.US);
         this.host = stripSlashes(host);
         this.port = port;
         this.absoluteEndpointPath = getAbsoluteEndpointPath(apiBasePath, endpointPath);
         this.timeout = timeout;
     }
 
-    protected <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequest(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, List<AbstractMap.SimpleEntry<String, String>> queryParameters, Map<String, String> headers) {
-        ServiceResult<String> uriResult = getUriString(requestProperties.getSubPath(), requestProperties.getSubPathParameters(), queryParameters);
+    protected <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequest(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, List<AbstractMap.SimpleEntry<String, String>> queryParameters, Map<String, String> headers) {
+        IHasDataAndSuccessState<String> uriResult = getUriString(requestProperties.getSubPath(), requestProperties.getSubPathParameters(), queryParameters);
         if (!uriResult.isSuccess()) {
-            return new ServiceResult<>(false, uriResult.getResultCode());
+            RestClientResultCodes resultCode = ResultCodeHelper.GetResultCodeOrNull(uriResult, RestClientResultCodes.class);
+            return resultCode != null
+                    ? new ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>, RestClientResultCodes>(resultCode)
+                    : new ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>, RestClientResultCodes>(RestClientResultCodes.CANNOT_CREATE_URI);
         }
         String uriString = uriResult.getData();
 
-        ServiceResult<String> bodyStringResult = getBodyString(requestProperties.getBody());
+        IHasDataAndSuccessState<String> bodyStringResult = getBodyString(requestProperties.getBody());
         if (!bodyStringResult.isSuccess()) {
-            return new ServiceResult<>(false, bodyStringResult.getResultCode());
+            RestClientResultCodes resultCode = ResultCodeHelper.GetResultCodeOrNull(uriResult, RestClientResultCodes.class);
+            return resultCode != null
+                    ? new ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>, RestClientResultCodes>(resultCode)
+                    : new ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>, RestClientResultCodes>(RestClientResultCodes.CANNOT_CREATE_JSON_STRING_FROM_OBJECT);
         }
         String bodyString = bodyStringResult.getData();
 
-        ServiceResult<NetworkResponse> networkResponseResult = getNetworkResponse(method, uriString, headers, bodyString);
+        IHasDataAndSuccessState<NetworkResponse> networkResponseResult = getNetworkResponse(method, uriString, headers, bodyString);
         if (!networkResponseResult.isSuccess()) {
-            return new ServiceResult<>(false, networkResponseResult.getResultCode());
+            RestClientResultCodes resultCode = ResultCodeHelper.GetResultCodeOrNull(uriResult, RestClientResultCodes.class);
+            return resultCode != null
+                    ? new ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>, RestClientResultCodes>(resultCode)
+                    : new ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>, RestClientResultCodes>(RestClientResultCodes.REQUEST_FAILED);
         }
         NetworkResponse networkResponse = networkResponseResult.getData();
 
         return createRestResultFromNetworkResponse(requestProperties.getSuccessResponseDataType(), requestProperties.getErrorResponseDataType(), networkResponse, requestProperties.getSuccessStatusCodes());
     }
 
-    private ServiceResult<String> getUriString(String subPath, String[] subPathParameters, List<AbstractMap.SimpleEntry<String, String>> queryParameters) {
+    private IHasDataAndSuccessState<String> getUriString(String subPath, String[] subPathParameters, List<AbstractMap.SimpleEntry<String, String>> queryParameters) {
         String parametrizedSubPath = getParametrizedSubPath(subPath, subPathParameters);
 
         try {
             String uriString = new URI(scheme, null, host, port, absoluteEndpointPath + parametrizedSubPath, null, null).toString();
             String queryString = QueryParamsHelper.getQueryString(queryParameters, ENCODING);
-            return new ServiceResult<>(uriString + queryString);
+            return new ServiceResult<>(uriString + queryString, GeneralResultCodes.OK);
         } catch (Exception e) {
-            return new ServiceResult<>(false, CANNOT_CREATE_URI);
+            return new ServiceResult<>(CANNOT_CREATE_URI);
         }
     }
 
-    private ServiceResult<String> getBodyString(Object body) {
+    private IHasDataAndSuccessState<String> getBodyString(Object body) {
         if (body != null) {
             try {
-                return new ServiceResult<>(objectMapper.writeValueAsString(body));
+                return new ServiceResult<>(objectMapper.writeValueAsString(body), GeneralResultCodes.OK);
             } catch (Exception e) {
-                return new ServiceResult<>(false, CANNOT_CREATE_JSON_STRING_FROM_OBJECT);
+                return new ServiceResult<>(RestClientResultCodes.CANNOT_CREATE_JSON_STRING_FROM_OBJECT);
             }
         }
         return new ServiceResult<>();
     }
 
-    private ServiceResult<NetworkResponse> getNetworkResponse(int method, String uriString, Map<String, String> headers, String bodyString) {
+    private IHasDataAndSuccessState<NetworkResponse> getNetworkResponse(int method, String uriString, Map<String, String> headers, String bodyString) {
         RequestFuture<NetworkResponse> future = RequestFuture.newFuture();
         requestQueue.add(new NetworkResponseRequest(method, uriString, getHeadersWithRequestDefaultHeaders(headers), bodyString, future, future, ENCODING));
 
@@ -123,41 +127,41 @@ abstract class RestClientBase implements IRestClient {
             response = future.get(timeout, TimeUnit.MILLISECONDS);
         }
         catch (InterruptedException e) {
-            return new ServiceResult<>(false, REQUEST_INTERRUPTED);
+            return new ServiceResult<>(RestClientResultCodes.REQUEST_INTERRUPTED);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (!(cause instanceof VolleyError)) {
-                return new ServiceResult<>(false, REQUEST_FAILED);
+                return new ServiceResult<>(RestClientResultCodes.REQUEST_FAILED);
             }
             VolleyError error = (VolleyError) cause;
             if (error.networkResponse == null) {
-                return new ServiceResult<>(false, REQUEST_FAILED);
+                return new ServiceResult<>(RestClientResultCodes.REQUEST_FAILED);
             }
             response = error.networkResponse;
         } catch (TimeoutException e) {
-            return new ServiceResult<>(false, REQUEST_TIMED_OUT);
+            return new ServiceResult<>(RestClientResultCodes.REQUEST_TIMED_OUT);
         }
 
-        return new ServiceResult<>(response);
+        return new ServiceResult<>(response, GeneralResultCodes.OK);
     }
 
-    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> createRestResultFromNetworkResponse(Class<SuccessResponseDataType> successResponseDataType, Class<ErrorResponseDataType> errorResponseDataType, NetworkResponse networkResponse, Integer[] successStatusCodes) {
+    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> createRestResultFromNetworkResponse(Class<SuccessResponseDataType> successResponseDataType, Class<ErrorResponseDataType> errorResponseDataType, NetworkResponse networkResponse, Integer[] successStatusCodes) {
         String jsonString = NetworkResponseRequest.parseToString(networkResponse);
 
         if (isStatusCodeOk(networkResponse.statusCode, successStatusCodes)) {
             if (successResponseDataType == null) {
-                return new ServiceResult<>(new RestResult<SuccessResponseDataType, ErrorResponseDataType>(networkResponse.statusCode));
+                return new ServiceResult<>(new RestResult<SuccessResponseDataType, ErrorResponseDataType>(networkResponse.statusCode), GeneralResultCodes.OK);
             }
             else {
                 try {
                     SuccessResponseDataType successObject = objectMapper.readValue(jsonString, successResponseDataType);
-                    return new ServiceResult<>(new RestResult<SuccessResponseDataType, ErrorResponseDataType>(networkResponse.statusCode, successObject));
+                    return new ServiceResult<>(new RestResult<SuccessResponseDataType, ErrorResponseDataType>(networkResponse.statusCode, successObject), GeneralResultCodes.OK);
                 } catch (JsonMappingException e) {
-                    return new ServiceResult<>(false, JSON_RESPONSE_DATA_TYPE_MISMATCH);
+                    return new ServiceResult<>(RestClientResultCodes.JSON_RESPONSE_DATA_TYPE_MISMATCH);
                 } catch (JsonParseException e) {
-                    return new ServiceResult<>(false, RESPONSE_IS_NOT_VALID_JSON);
+                    return new ServiceResult<>(RestClientResultCodes.RESPONSE_IS_NOT_VALID_JSON);
                 } catch (IOException e) {
-                    return new ServiceResult<>(false, CANNOT_CREATE_OBJECT_FROM_SUCCESS_RESPONSE);
+                    return new ServiceResult<>(RestClientResultCodes.CANNOT_CREATE_OBJECT_FROM_SUCCESS_RESPONSE);
                 }
             }
         }
@@ -168,13 +172,13 @@ abstract class RestClientBase implements IRestClient {
         else {
             try {
                 ErrorResponseDataType errorObject = objectMapper.readValue(jsonString, errorResponseDataType);
-                return new ServiceResult<>(new RestResult<SuccessResponseDataType, ErrorResponseDataType>(networkResponse.statusCode, errorObject));
+                return new ServiceResult<>(new RestResult<SuccessResponseDataType, ErrorResponseDataType>(networkResponse.statusCode, errorObject), GeneralResultCodes.OK);
             } catch (JsonMappingException e) {
-                return new ServiceResult<>(false, JSON_ERROR_DATA_TYPE_MISMATCH);
+                return new ServiceResult<>(RestClientResultCodes.JSON_ERROR_DATA_TYPE_MISMATCH);
             } catch (JsonParseException e) {
-                return new ServiceResult<>(false, RESPONSE_IS_NOT_VALID_JSON);
+                return new ServiceResult<>(RestClientResultCodes.RESPONSE_IS_NOT_VALID_JSON);
             } catch (IOException e) {
-                return new ServiceResult<>(false, CANNOT_CREATE_OBJECT_FROM_ERROR_RESPONSE);
+                return new ServiceResult<>(RestClientResultCodes.CANNOT_CREATE_OBJECT_FROM_ERROR_RESPONSE);
             }
         }
     }

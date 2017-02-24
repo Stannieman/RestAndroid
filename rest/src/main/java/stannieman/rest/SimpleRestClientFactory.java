@@ -10,13 +10,11 @@ import stannieman.rest.models.SimpleRestClientFactoryConfig;
 public final class SimpleRestClientFactory extends RestClientFactoryBase implements ISimpleRestClientFactory {
 
     /**
-     * Constructor to create a factory with the given config.
+     * Constructor to create a factory.
      * @param context application context
-     * @param config configuration
      */
-    public SimpleRestClientFactory(Context context, SimpleRestClientFactoryConfig config) {
+    public SimpleRestClientFactory(Context context) {
         super(context);
-        loadConfig(config);
     }
 
     @Override

@@ -17,12 +17,12 @@ public abstract class QueryParamsHelper {
      * @return the resulting query string
      * @throws UnsupportedEncodingException when the given encoding is not supported
      */
-    public static String getQueryString(List<AbstractMap.SimpleEntry<String, String>> queryParameters, String encoding) throws UnsupportedEncodingException {
+    public static String getQueryString(final List<AbstractMap.SimpleEntry<String, String>> queryParameters, final String encoding) throws UnsupportedEncodingException {
         if (queryParameters == null || queryParameters.size() == 0) {
             return "";
         }
 
-        StringBuilder builder = new StringBuilder("?");
+        final StringBuilder builder = new StringBuilder("?");
 
         for (AbstractMap.SimpleEntry<String, String> param : queryParameters) {
             builder.append(replacePlus(URLEncoder.encode(param.getKey(), encoding)));

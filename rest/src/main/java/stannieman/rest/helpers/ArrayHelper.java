@@ -13,8 +13,8 @@ public abstract class ArrayHelper {
      * @param <T> type of the object and objects in the array
      * @return whether the array contains an object equam to the given object
      */
-    public static <T> boolean Contains(T[] array, T object){
-        for (T arrayItem : array) {
+    public static <T> boolean Contains(final T[] array, final T object){
+        for (final T arrayItem : array) {
             if (arrayItem.equals(object)) {
                 return true;
             }

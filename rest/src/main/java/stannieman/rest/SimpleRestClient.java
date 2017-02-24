@@ -4,7 +4,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import stannieman.commonservices.models.ServiceResult;
+import stannieman.commonservices.models.IHasDataAndSuccessState;
 import stannieman.rest.models.ErrorResponseDataBase;
 import stannieman.rest.models.RequestProperties;
 import stannieman.rest.models.RestResult;
@@ -20,22 +20,22 @@ public final class SimpleRestClient extends RestClientBase {
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doSimpleRequest(Request.Method.GET, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doSimpleRequest(Request.Method.POST, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doSimpleRequest(Request.Method.PUT, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doSimpleRequest(Request.Method.PATCH, requestProperties);
     }
 
@@ -63,7 +63,7 @@ public final class SimpleRestClient extends RestClientBase {
         new DoRequestAsyncTask<>(method, requestProperties, requestResponseListener).execute();
     }
 
-    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doSimpleRequest(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doSimpleRequest(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequest(method, requestProperties, requestProperties.getQueryParameters(), requestProperties.getHeaders());
     }
 
@@ -73,7 +73,7 @@ public final class SimpleRestClient extends RestClientBase {
         }
 
         @Override
-        protected ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doInBackground(Void... voids) {
+        protected IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doInBackground(Void... voids) {
             return doSimpleRequest(method, requestProperties);
         }
     }

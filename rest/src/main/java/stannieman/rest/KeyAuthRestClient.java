@@ -8,7 +8,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import stannieman.commonservices.models.ServiceResult;
+import stannieman.commonservices.models.IHasDataAndSuccessState;
 import stannieman.rest.models.ErrorResponseDataBase;
 import stannieman.rest.models.RequestProperties;
 import stannieman.rest.models.RestResult;
@@ -26,22 +26,22 @@ public final class KeyAuthRestClient extends RestClientBase {
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithKeyParameter(Request.Method.GET, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithKeyParameter(Request.Method.POST, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithKeyParameter(Request.Method.PUT, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithKeyParameter(Request.Method.PATCH, requestProperties);
     }
 
@@ -65,7 +65,7 @@ public final class KeyAuthRestClient extends RestClientBase {
         doRequestWithKeyParameterAsync(Request.Method.PATCH, requestProperties, requestResponseListener);
     }
 
-    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequestWithKeyParameter(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequestWithKeyParameter(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequest(method, requestProperties, getQueryParametersWithKey(requestProperties.getQueryParameters()), requestProperties.getHeaders());
     }
 
@@ -79,7 +79,7 @@ public final class KeyAuthRestClient extends RestClientBase {
         }
 
         @Override
-        protected ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doInBackground(Void... voids) {
+        protected IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doInBackground(Void... voids) {
             return doRequestWithKeyParameter(method, requestProperties);
         }
     }

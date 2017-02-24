@@ -12,13 +12,11 @@ public final class BasicAuthRestClientFactory extends RestClientFactoryBase impl
     private String password;
 
     /**
-     * Constructor to create a factory with the given config.
+     * Constructor to create a factory.
      * @param context application context
-     * @param config configuration
      */
-    public BasicAuthRestClientFactory(Context context, BasicAuthRestClientFactoryConfig config) {
+    public BasicAuthRestClientFactory(Context context) {
         super(context);
-        loadConfig(config);
     }
 
     @Override

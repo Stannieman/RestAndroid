@@ -29,22 +29,22 @@ public final class BasicAuthRestClient extends RestClientBase {
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithAuthHeader(Request.Method.GET, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithAuthHeader(Request.Method.POST, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithAuthHeader(Request.Method.PUT, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithAuthHeader(Request.Method.PATCH, requestProperties);
     }
 
@@ -68,7 +68,7 @@ public final class BasicAuthRestClient extends RestClientBase {
         doRequestWithAuthHeaderAsync(Request.Method.PATCH, requestProperties, requestResponseListener);
     }
 
-    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequestWithAuthHeader(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequestWithAuthHeader(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequest(method, requestProperties, requestProperties.getQueryParameters(), getHeadersWithAuthHeader(requestProperties.getHeaders()));
     }
 
@@ -82,7 +82,7 @@ public final class BasicAuthRestClient extends RestClientBase {
         }
 
         @Override
-        protected ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doInBackground(Void... voids) {
+        protected IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doInBackground(Void... voids) {
             return doRequestWithAuthHeader(method, requestProperties);
         }
     }

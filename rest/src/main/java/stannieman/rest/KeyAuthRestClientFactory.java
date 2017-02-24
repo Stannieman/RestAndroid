@@ -12,13 +12,11 @@ public final class KeyAuthRestClientFactory extends RestClientFactoryBase implem
     private String key;
 
     /**
-     * Constructor to create a factory with the given config.
+     * Constructor to create a factory.
      * @param context application context
-     * @param config configuration
      */
-    public KeyAuthRestClientFactory(Context context, KeyAuthRestClientFactoryConfig config) {
+    public KeyAuthRestClientFactory(Context context) {
         super(context);
-        loadConfig(config);
     }
 
     @Override
