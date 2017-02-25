@@ -5,7 +5,7 @@ package stannieman.rest.models;
  * @param <SuccessResponseDataType> type of the object returned by the end point when the request was successful
  * @param <ErrorResponseDataType> type of the object returned by the end point when the request was not successful
  */
-public final class RestResult<SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> {
+public final class RestResult<SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> {
 
     //region isSuccess
 

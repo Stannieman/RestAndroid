@@ -2,13 +2,12 @@ package stannieman.rest;
 
 import android.os.AsyncTask;
 
-import stannieman.commonservices.models.ServiceResult;
+import stannieman.commonservices.models.IHasDataAndSuccessState;
 import stannieman.rest.models.ErrorResponseDataBase;
 import stannieman.rest.models.RequestProperties;
 import stannieman.rest.models.RestResult;
-import stannieman.rest.models.SuccessResponseDataBase;
 
-abstract class DoRequestAsyncTaskBase<SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> extends AsyncTask<Void, Void, ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>>> {
+abstract class DoRequestAsyncTaskBase<SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> extends AsyncTask<Void, Void, IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>>> {
     final int method;
     private final IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener;
     final RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties;
@@ -20,7 +19,7 @@ abstract class DoRequestAsyncTaskBase<SuccessResponseDataType extends SuccessRes
     }
 
     @Override
-    protected void onPostExecute(ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> result) {
+    protected void onPostExecute(IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> result) {
         requestResponseListener.onRequestResponse(result);
     }
 }

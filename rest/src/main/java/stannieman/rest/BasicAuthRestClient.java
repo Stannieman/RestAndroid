@@ -13,7 +13,6 @@ import stannieman.commonservices.models.*;
 import stannieman.rest.models.ErrorResponseDataBase;
 import stannieman.rest.models.RequestProperties;
 import stannieman.rest.models.RestResult;
-import stannieman.rest.models.SuccessResponseDataBase;
 
 /**
  * A simple REST client that supports basic authentication.
@@ -24,73 +23,73 @@ public final class BasicAuthRestClient extends RestClientBase {
     private static final String BasicAuthHeaderValuePrefix = "Basic ";
     private final Map<String, String> authHeader;
 
-    BasicAuthRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, String userName, String password) {
+    BasicAuthRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, String username, String password) {
         super(objectMapper, requestQueue, schema, host, port, apiBasePath, endpointPath, timeout);
-        authHeader = getBasicAuthHeader(userName, password);
+        authHeader = getBasicAuthHeader(username, password);
     }
 
     @Override
-    public <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> get(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithAuthHeader(Request.Method.GET, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> post(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithAuthHeader(Request.Method.POST, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> put(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithAuthHeader(Request.Method.PUT, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> patch(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequestWithAuthHeader(Request.Method.PATCH, requestProperties);
     }
 
     @Override
-    public <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void getAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void getAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
         doRequestWithAuthHeaderAsync(Request.Method.GET, requestProperties, requestResponseListener);
     }
 
     @Override
-    public <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void postAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void postAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
         doRequestWithAuthHeaderAsync(Request.Method.POST, requestProperties, requestResponseListener);
     }
 
     @Override
-    public <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void putAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void putAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
         doRequestWithAuthHeaderAsync(Request.Method.PUT, requestProperties, requestResponseListener);
     }
 
     @Override
-    public <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void patchAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
+    public <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void patchAsync(RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
         doRequestWithAuthHeaderAsync(Request.Method.PATCH, requestProperties, requestResponseListener);
     }
 
-    private <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequestWithAuthHeader(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
+    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doRequestWithAuthHeader(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties) {
         return doRequest(method, requestProperties, requestProperties.getQueryParameters(), getHeadersWithAuthHeader(requestProperties.getHeaders()));
     }
 
-    private <SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> void doRequestWithAuthHeaderAsync(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
+    private <SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> void doRequestWithAuthHeaderAsync(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
         new DoRequestWithAuthHeaderAsyncTask<>(method, requestProperties, requestResponseListener).execute();
     }
 
-    private class DoRequestWithAuthHeaderAsyncTask<SuccessResponseDataType extends SuccessResponseDataBase, ErrorResponseDataType extends ErrorResponseDataBase> extends DoRequestAsyncTaskBase<SuccessResponseDataType, ErrorResponseDataType> {
+    private class DoRequestWithAuthHeaderAsyncTask<SuccessResponseDataType, ErrorResponseDataType extends ErrorResponseDataBase> extends DoRequestAsyncTaskBase<SuccessResponseDataType, ErrorResponseDataType> {
         DoRequestWithAuthHeaderAsyncTask(int method, RequestProperties<SuccessResponseDataType, ErrorResponseDataType> requestProperties, IRequestResponseListener<SuccessResponseDataType, ErrorResponseDataType> requestResponseListener) {
             super(method, requestProperties, requestResponseListener);
         }
 
         @Override
-        protected ServiceResult<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doInBackground(Void... voids) {
+        protected IHasDataAndSuccessState<RestResult<SuccessResponseDataType, ErrorResponseDataType>> doInBackground(Void... voids) {
             return doRequestWithAuthHeader(method, requestProperties);
         }
     }
 
-    private Map<String, String> getBasicAuthHeader(String userName, String password) {
+    private Map<String, String> getBasicAuthHeader(String username, String password) {
         Map<String, String> basicAuthHeader = new HashMap<>();
-        basicAuthHeader.put(AuthHeaderKey, BasicAuthHeaderValuePrefix + Base64.encodeToString(String.format("%s:%s", userName, password).getBytes(), Base64.NO_WRAP));
+        basicAuthHeader.put(AuthHeaderKey, BasicAuthHeaderValuePrefix + Base64.encodeToString(String.format("%s:%s", username, password).getBytes(), Base64.NO_WRAP));
         return basicAuthHeader;
     }
 

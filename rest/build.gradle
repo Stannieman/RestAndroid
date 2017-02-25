@@ -8,19 +8,19 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0.0.0"
+        versionCode 3
+        versionName "1.0.1"
     }
 
     lintOptions {
-        abortOnError false
+        disable 'InvalidPackage'
     }
 }
 
 dependencies {
-    compile 'be.stannieman:commonservices:1.0.0.3'
+    compile 'be.stannieman:commonservices:1.0.1.0'
     compile 'com.android.volley:volley:1.0.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.7'
 }
 
 task createJavaDoc(type: Javadoc) {
@@ -34,14 +34,20 @@ task createJavaDocJar(type: Jar, dependsOn: createJavaDoc) {
     from createJavaDoc.destinationDir
 }
 
+task createSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
 publishing {
     publications {
         aar(MavenPublication) {
             groupId 'be.stannieman'
             artifactId 'rest'
-            version '1.0.0.0'
+            version '1.0.1'
             artifact "$buildDir\\outputs\\aar\\signed-${project.getName()}-release.aar"
             artifact createJavaDocJar
+            artifact createSourcesJar
 
             //generate pom nodes for dependencies
             pom.withXml {
