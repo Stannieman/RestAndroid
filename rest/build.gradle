@@ -2,14 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 16
-        versionCode 3
-        versionName "1.0.1"
         targetSdkVersion 27
+        versionCode 4
+        versionName "1.2.0"
     }
 
     lintOptions {
@@ -18,9 +18,9 @@ android {
 }
 
 dependencies {
-    compile 'be.stannieman:commonservices:1.0.2.0'
-    compile 'com.android.volley:volley:1.1.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+    compile 'be.stannieman:commonservices:1.0.1.0'
+    compile 'com.android.volley:volley:1.0.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.7'
 }
 
 task createJavaDoc(type: Javadoc) {
@@ -44,7 +44,7 @@ publishing {
         aar(MavenPublication) {
             groupId 'be.stannieman'
             artifactId 'rest'
-            version '1.2.0'
+            version '1.0.1'
             artifact "$buildDir\\outputs\\aar\\signed-${project.getName()}-release.aar"
             artifact createJavaDocJar
             artifact createSourcesJar
