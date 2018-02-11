@@ -3,6 +3,7 @@ package stannieman.rest;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.HttpHeaderParser;
 
 import java.io.UnsupportedEncodingException;
@@ -17,12 +18,13 @@ class NetworkResponseRequest extends Request<NetworkResponse> {
     private final String body;
     private final String encoding;
 
-    public NetworkResponseRequest(int method, String url, Map<String, String> headers, String body, Response.Listener<NetworkResponse> responseListener, Response.ErrorListener errorListener, String encoding) {
+    public NetworkResponseRequest(int method, String url, Map<String, String> headers, String body, RetryPolicy retryPolicy, Response.Listener<NetworkResponse> responseListener, Response.ErrorListener errorListener, String encoding) {
         super(method, url, errorListener);
         this.responseListener = responseListener;
         this.headers = headers;
         this.body = body;
         this.encoding = encoding;
+        this.setRetryPolicy(retryPolicy);
     }
 
     @Override
