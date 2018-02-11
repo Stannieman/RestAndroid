@@ -2,6 +2,7 @@ package stannieman.rest;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.AbstractMap;
@@ -20,8 +21,8 @@ import stannieman.rest.models.RestResult;
 public final class KeyAuthRestClient extends RestClientBase {
     private final AbstractMap.SimpleEntry<String, String> keyQueryParameter;
 
-    KeyAuthRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, String keyParameterName, String key) {
-        super(objectMapper, requestQueue, schema, host, port, apiBasePath, endpointPath, timeout);
+    KeyAuthRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, RetryPolicy retryPolicy, String keyParameterName, String key) {
+        super(objectMapper, requestQueue, schema, host, port, apiBasePath, endpointPath, timeout, retryPolicy);
         keyQueryParameter = new AbstractMap.SimpleEntry<>(keyParameterName, key);
     }
 

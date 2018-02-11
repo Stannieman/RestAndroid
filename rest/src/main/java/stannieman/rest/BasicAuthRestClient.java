@@ -4,6 +4,7 @@ import android.util.Base64;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
@@ -23,8 +24,8 @@ public final class BasicAuthRestClient extends RestClientBase {
     private static final String BasicAuthHeaderValuePrefix = "Basic ";
     private final Map<String, String> authHeader;
 
-    BasicAuthRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, String username, String password) {
-        super(objectMapper, requestQueue, schema, host, port, apiBasePath, endpointPath, timeout);
+    BasicAuthRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, RetryPolicy retryPolicy, String username, String password) {
+        super(objectMapper, requestQueue, schema, host, port, apiBasePath, endpointPath, timeout, retryPolicy);
         authHeader = getBasicAuthHeader(username, password);
     }
 

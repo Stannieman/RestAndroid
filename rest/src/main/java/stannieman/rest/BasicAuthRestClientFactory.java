@@ -22,7 +22,7 @@ public final class BasicAuthRestClientFactory extends RestClientFactoryBase impl
     @Override
     public IRestClient getRestClient(String endpointPath) {
         configLock.lock();
-        IRestClient client = new BasicAuthRestClient(objectMapper, requestQueue, scheme, host, port, apiBasePath, endpointPath, timeout, username, password);
+        IRestClient client = new BasicAuthRestClient(objectMapper, requestQueue, scheme, host, port, apiBasePath, endpointPath, timeout, retryPolicy, username, password);
         configLock.unlock();
 
         return client;

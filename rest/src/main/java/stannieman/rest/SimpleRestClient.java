@@ -2,6 +2,7 @@ package stannieman.rest;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import stannieman.commonservices.models.IHasDataAndSuccessState;
@@ -15,8 +16,8 @@ import stannieman.rest.models.RestResult;
  */
 public final class SimpleRestClient extends RestClientBase {
 
-    SimpleRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout) {
-        super(objectMapper, requestQueue, schema, host, port, apiBasePath, endpointPath, timeout);
+    SimpleRestClient(ObjectMapper objectMapper, RequestQueue requestQueue, Scheme schema, String host, int port, String apiBasePath, String endpointPath, long timeout, RetryPolicy retryPolicy) {
+        super(objectMapper, requestQueue, schema, host, port, apiBasePath, endpointPath, timeout, retryPolicy);
     }
 
     @Override

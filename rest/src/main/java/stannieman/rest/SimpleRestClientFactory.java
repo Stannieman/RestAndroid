@@ -20,7 +20,7 @@ public final class SimpleRestClientFactory extends RestClientFactoryBase impleme
     @Override
     public IRestClient getRestClient(String endpointPath) {
         configLock.lock();
-        IRestClient client = new SimpleRestClient(objectMapper, requestQueue, scheme, host, port, apiBasePath, endpointPath, timeout);
+        IRestClient client = new SimpleRestClient(objectMapper, requestQueue, scheme, host, port, apiBasePath, endpointPath, timeout, retryPolicy);
         configLock.unlock();
 
         return client;

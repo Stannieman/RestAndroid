@@ -22,7 +22,7 @@ public final class KeyAuthRestClientFactory extends RestClientFactoryBase implem
     @Override
     public IRestClient getRestClient(String endpointPath) {
         configLock.lock();
-        IRestClient client = new KeyAuthRestClient(objectMapper, requestQueue, scheme, host, port, apiBasePath, endpointPath, timeout, keyParameterName, key);
+        IRestClient client = new KeyAuthRestClient(objectMapper, requestQueue, scheme, host, port, apiBasePath, endpointPath, timeout, retryPolicy, keyParameterName, key);
         configLock.unlock();
 
         return client;
