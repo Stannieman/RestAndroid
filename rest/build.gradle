@@ -18,9 +18,9 @@ android {
 }
 
 dependencies {
-    compile 'be.stannieman:commonservices:1.0.2.0'
-    compile 'com.android.volley:volley:1.1.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+    implementation 'be.stannieman:commonservices:1.0.2.0'
+    implementation 'com.android.volley:volley:1.1.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
 }
 
 task createJavaDoc(type: Javadoc) {
